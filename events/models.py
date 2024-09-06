@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 
 class Event(models.Model):
     EVENT_CHOICES = [
-        ("conference,", "Conferences,"),
+        ("conference", "Conference"),
         ("meetup,", "Meetup"),
         ("entertainment", "Entertainment"),
     ]
@@ -29,8 +29,10 @@ class Participant(models.Model):
         ("cancelled", "Cancelled"),
     ]
 
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        get_user_model(), related_name="participants", on_delete=models.CASCADE
+    )
+    event = models.ForeignKey(Event, related_name="event_participants", on_delete=models.CASCADE)
     registration_date = models.DateField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES)
 
