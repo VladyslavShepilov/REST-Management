@@ -135,7 +135,8 @@ SIMPLE_JWT = {
 
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
-        "config.permissions.IsAdminOrIfAuthenticatedReadOnly",
+        "rest_framework.permissions.AllowAny",
+        # "config.permissions.IsAdminOrIfAuthenticatedReadOnly",
     ],
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
