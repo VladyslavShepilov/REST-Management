@@ -30,8 +30,9 @@ SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-v8iza6at+6+uuj1h+1vex0k5(9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("SECRET_KEY", True)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
+INTERNAL_IPS = ["localhost"]
 
 # Application definition
 
@@ -44,6 +45,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "drf_spectacular",
     "rest_framework",
+    "rest_framework_simplejwt",
+    "config",
     "events",
     "user",
 ]
