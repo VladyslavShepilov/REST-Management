@@ -18,6 +18,7 @@ from events.models import Event, Participant
 
 class EventViewSet(viewsets.ModelViewSet):
     serializer_class = EventSerializer
+    queryset = Event.objects.all()
     permission_classes = (IsAdminOrOrganizerOrReadOnly,)
     authentication_classes = (JWTAuthentication,)
 
