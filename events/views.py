@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django.db.models import Count
 
 from events.serializers import (
     EventSerializer,
@@ -17,15 +18,31 @@ from events.models import Event, Participant
 
 class EventViewSet(viewsets.ModelViewSet):
     serializer_class = EventSerializer
-    queryset = Event.objects.all()
     permission_classes = (IsAdminOrOrganizerOrReadOnly,)
     authentication_classes = (JWTAuthentication,)
+
+    def get_queryset(self):
+        if self.action == "list":
+            return (
+                Event.objects.annotate(participants_count=Count("participants"))
+                .select_related("organizer")
+                .prefetch_related("participants")
+            )
+
+        elif self.action == "retrieve":
+            return Event.objects.select_related("organizer").prefetch_related(
+                "event_participants__user"
+            )
+
+        return Event.objects.all()
 
     def get_serializer_class(self):
         if self.action == "list":
             return EventListSerializer
+
         elif self.action == "retrieve":
             return EventDetailSerializer
+
         return EventSerializer
 
     def perform_create(self, serializer):
