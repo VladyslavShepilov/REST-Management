@@ -1,7 +1,8 @@
-## Comments
-Application for managing events. Consists of 3 applications: 
+## Event Management
+Application for managing events. Consists of 3 sub apps: 
 * config, which is the main app with console commands and settings.
-* events, which implements CRUD operations Events and additional functionality such as registration to event, filtering etc.
+* events, which implements CRUD operations Events and additional functionality such as registration to event, filtering,
+email notifications(* note that they are configured to store emails locally in "root_folder"/email).
 * User application with JWT endpoints, registration and authentication endpoints.
 
 ### Swagger documentation(extended)
@@ -29,3 +30,6 @@ Application for managing events. Consists of 3 applications:
     python manage.py makemigrations
     docker-compose build
     docker-compose up
+
+### Will be available on
+    http://0.0.0.0:8001/
