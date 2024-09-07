@@ -25,7 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-v8iza6at+6+uuj1h+1vex0k5(9az2_x(sqj!o&(@%pt-iakst=")
+SECRET_KEY = os.getenv(
+    "SECRET_KEY", "django-insecure-v8iza6at+6+uuj1h+1vex0k5(9az2_x(sqj!o&(@%pt-iakst="
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("SECRET_KEY", True)
@@ -163,3 +165,12 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
 }
+
+EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+EMAIL_FILE_PATH = os.path.join(BASE_DIR, "mails")
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv("HOST_EMAIL")
+EMAIL_HOST_PASSWORD = os.getenv("HOST_EMAIL_PASS")
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")

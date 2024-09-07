@@ -18,6 +18,7 @@ from events.serializers import (
     EventDetailSerializer,
 )
 from events.models import Event, Participant
+from events.signals import user_registered_for_event
 
 
 class EventViewSet(viewsets.ModelViewSet):
@@ -127,6 +128,9 @@ class EventViewSet(viewsets.ModelViewSet):
             )
 
         Participant.objects.create(user=user, event=event, status="active")
+
+        user_registered_for_event.send(sender=self.__class__, user=user, event=event)
+
         return Response(
             {"detail": f"Successfully registered for the event {event.title}."},
             status=status.HTTP_201_CREATED,
