@@ -28,7 +28,14 @@ class EventListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Event
-        fields = ("title", "type", "description", "date", "location", "participants_count")
+        fields = (
+            "title",
+            "type",
+            "description",
+            "date",
+            "location",
+            "participants_count",
+        )
 
 
 class EventDetailSerializer(serializers.ModelSerializer):
@@ -39,4 +46,12 @@ class EventDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Event
-        fields = ("title", "type", "description", "date", "location", "organizer", "participants")
+        fields = (
+            "title",
+            "type",
+            "description",
+            "date",
+            "location",
+            "organizer",
+            "participants",
+        )
