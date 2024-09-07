@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db.models import Count
+from datetime import datetime
 
 from events.serializers import (
     EventSerializer,
@@ -23,19 +24,36 @@ class EventViewSet(viewsets.ModelViewSet):
     authentication_classes = (JWTAuthentication,)
 
     def get_queryset(self):
+        queryset = self.queryset
+
+        date = self.request.query_params.get("date")
+        title = self.request.query_params.get("title")
+        organizer = self.request.query_params.get("organizer")
+
+        if date:
+            try:
+                date = datetime.strptime(date, "%Y-%m-%d").date()
+                queryset = queryset.filter(date=date)
+            except ValueError:
+                pass
+
+        if title:
+            queryset = queryset.filter(title__icontains=title)
+
+        if organizer:
+            queryset = queryset.filter(organizer__username=organizer)
+
         if self.action == "list":
-            return (
-                Event.objects.annotate(participants_count=Count("participants"))
-                .select_related("organizer")
-                .prefetch_related("participants")
-            )
+            return queryset.annotate(participants_count=Count("participants")).select_related(
+                "organizer"
+            ).prefetch_related("participants")
 
         elif self.action == "retrieve":
-            return Event.objects.select_related("organizer").prefetch_related(
-                "event_participants__user"
+            return queryset.select_related("organizer").prefetch_related(
+                "event_participants__user", "participants"
             )
 
-        return Event.objects.all()
+        return queryset
 
     def get_serializer_class(self):
         if self.action == "list":
