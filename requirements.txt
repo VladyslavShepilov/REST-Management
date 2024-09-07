@@ -5,3 +5,4 @@ python-dotenv==1.0.1
 redis==5.0.6
 django-celery-beat==2.6.0
 django-celery-results==2.5.1
+drf-spectacular==0.22.1

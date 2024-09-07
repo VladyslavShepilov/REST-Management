@@ -9,6 +9,9 @@ from rest_framework.response import Response
 from django.db.models import Count
 from datetime import datetime
 
+from drf_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.types import OpenApiTypes
+
 from events.serializers import (
     EventSerializer,
     EventListSerializer,
@@ -44,9 +47,11 @@ class EventViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(organizer__username=organizer)
 
         if self.action == "list":
-            return queryset.annotate(participants_count=Count("participants")).select_related(
-                "organizer"
-            ).prefetch_related("participants")
+            return (
+                queryset.annotate(participants_count=Count("participants"))
+                .select_related("organizer")
+                .prefetch_related("participants")
+            )
 
         elif self.action == "retrieve":
             return queryset.select_related("organizer").prefetch_related(
@@ -79,6 +84,32 @@ class EventViewSet(viewsets.ModelViewSet):
     def is_user_registered(self, event, user):
         return event.participants.filter(id=user.id).exists()
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="date",
+                description="Filter events by date (format: YYYY-MM-DD)",
+                required=False,
+                type=OpenApiTypes.DATE,
+            ),
+            OpenApiParameter(
+                name="title",
+                description="Filter events by title (case insensitive)",
+                required=False,
+                type=OpenApiTypes.STR,
+            ),
+            OpenApiParameter(
+                name="organizer",
+                description="Filter events by organizer's username",
+                required=False,
+                type=OpenApiTypes.STR,
+            ),
+        ],
+        description="Retrieve a list of events with optional filtering by date, title, and organizer.",
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
     @action(
         detail=True,
         methods=["post"],
@@ -86,6 +117,7 @@ class EventViewSet(viewsets.ModelViewSet):
         permission_classes=[IsAuthenticated],
     )
     def register(self, request, pk=None):
+        """Register current user to the event"""
         event, user = self.get_event_and_user(pk)
 
         if self.is_user_registered(event, user):
@@ -107,6 +139,7 @@ class EventViewSet(viewsets.ModelViewSet):
         permission_classes=[IsAuthenticated],
     )
     def unregister(self, request, pk=None):
+        """Unregister current user from event"""
         event, user = self.get_event_and_user(pk)
 
         participant = event.event_participants.filter(user=user).first()
