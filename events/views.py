@@ -118,7 +118,7 @@ class EventViewSet(viewsets.ModelViewSet):
         permission_classes=[IsAuthenticated],
     )
     def register(self, request, pk=None):
-        """Register current user to the event"""
+        """Register current user to the event. Notify user via email."""
         event, user = self.get_event_and_user(pk)
 
         if self.is_user_registered(event, user):
